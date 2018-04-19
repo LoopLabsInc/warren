@@ -19,7 +19,7 @@ module Warren
       end
 
       def fetch_nodes
-        []
+        raise RuntimeError.new("You must override #fetch_nodes in #{self.class}!")
       end
 
       def hostname

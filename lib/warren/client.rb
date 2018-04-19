@@ -18,6 +18,15 @@ module Warren
 
       `hostname #{ENV['HOSTNAME']}`
       `echo "127.0.0.1 #{ENV['HOSTNAME']}" >> /etc/hosts`
+
+      `mkdir -p #{ENV['RABBITMQ_MNESIA_DIR']}`
+      `mkdir -p #{ENV['RABBITMQ_LOG_BASE']}`
+
+      `rm -rf #{node.pid_file}`
+      `chown -R rabbitmq:rabbitmq #{ENV['MNESIA_NODE_BASE_DIR']}`
+      `chmod 777 #{ENV['MNESIA_NODE_BASE_DIR']}`
+      `chown -R rabbitmq:rabbitmq #{ENV['RABBITMQ_LOG_BASE']}`
+      `chmod 777 #{ENV['RABBITMQ_LOG_BASE']}`
     end
 
     def setup_env
@@ -49,6 +58,10 @@ module Warren
         Warren.logger.info "Applying policy #{base_cmd}"
         set_policy(base_cmd)
       end
+    end
+
+    def find_clusters
+      adapter.find_clusters
     end
 
     def cluster_with(cluster: nil, nodes: [])
