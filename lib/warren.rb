@@ -11,6 +11,7 @@ require 'warren/node'
 require 'warren/client'
 require 'warren/adapters/base'
 require 'warren/adapters/aws'
+require 'warren/adapters/local'
 
 require 'erle'
 
