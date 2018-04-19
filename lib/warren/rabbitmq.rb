@@ -72,6 +72,7 @@ module Warren
       # TODO: Parse for errors etc, raise?
       # TODO: "2>/dev/null" at the end of all commands?
       full_command = "rabbitmqctl -q #{cmd} 2>&1"
+      Warren.logger.info("Will execute '#{full_command}'")
       Warren.logger.send(log, full_command) if log
       `#{full_command}`
     end
