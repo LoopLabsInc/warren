@@ -22,7 +22,7 @@ module Warren
       `mkdir -p #{ENV['RABBITMQ_MNESIA_DIR']}`
       `mkdir -p #{ENV['RABBITMQ_LOG_BASE']}`
 
-      `rm -rf #{node.pid_file}`
+      `rm -rf #{pid_file}`
       `chown -R rabbitmq:rabbitmq #{ENV['MNESIA_NODE_BASE_DIR']}`
       `chmod 777 #{ENV['MNESIA_NODE_BASE_DIR']}`
       `chown -R rabbitmq:rabbitmq #{ENV['RABBITMQ_LOG_BASE']}`
