@@ -12,7 +12,7 @@ module Warren
       @hostname = adapter.hostname
       @node_name = adapter.node_name
       @type = type
-      @address = "#{@node_name}@#{@hostname}"
+      @address = "rabbit@#{adapter.hostname}"
 
       setup_env
       setup_permissions

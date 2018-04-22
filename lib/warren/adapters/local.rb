@@ -6,6 +6,10 @@ module Warren
         []
       end
 
+      def node_name
+        hostname
+      end
+
     end
   end
 end

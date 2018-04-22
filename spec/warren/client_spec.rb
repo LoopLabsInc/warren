@@ -16,13 +16,13 @@ RSpec.describe Warren::Client do
     end
 
     it 'reports as healthy' do
-      client = Warren::Client.new(hostname: 'ip-1-1.internal', adapter: Warren::Adapters::Base.new)
+      client = Warren::Client.new(adapter: Warren::Adapters::Base.new)
       expect(client.clustered_with?(remote_address: 'rabbit@ip-1-2.internal')).to eq(true)
     end
 
     it 'can distinquish excluded nodes' do
 
-      client = Warren::Client.new(hostname: 'ip-2-1.internal', adapter: Warren::Adapters::Base.new)
+      client = Warren::Client.new(adapter: Warren::Adapters::Base.new)
       expect(client.clustered_with?(remote_address: 'rabbit@ip-1-1.internal')).to eq(false)
 
     end
