@@ -12,7 +12,7 @@ module Warren
       @hostname = adapter.hostname
       @node_name = adapter.node_name
       @type = type
-      @address = "#{@hostname}@localhost"
+      @address = "#{@hostname}@127.0.0.1"
 
       setup_env
       setup_permissions
