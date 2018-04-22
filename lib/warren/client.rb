@@ -7,45 +7,54 @@ module Warren
     attr_reader :address # name@hostname
     attr_reader :adapter
 
-    def initialize(adapter: , hostname: adapter.hostname, node_name: Warren.config.node_name, type: Node::TYPES.first)
-      @node_name = node_name
+    def initialize(adapter: , type: Node::TYPES.first)
       @adapter = adapter
-      @hostname = hostname
+      @hostname = adapter.hostname
+      @node_name = adapter.node_name
       @type = type
       @address = "#{@node_name}@#{@hostname}"
 
       setup_env
-
-      `hostname #{ENV['HOSTNAME']}`
-      `echo "127.0.0.1 #{ENV['HOSTNAME']}" >> /etc/hosts`
-
-      `mkdir -p #{ENV['RABBITMQ_MNESIA_DIR']}`
-      `mkdir -p #{ENV['RABBITMQ_LOG_BASE']}`
-
-      `rm -rf #{pid_file}`
-      `chown -R rabbitmq:rabbitmq #{ENV['MNESIA_NODE_BASE_DIR']}`
-      `chmod 777 #{ENV['MNESIA_NODE_BASE_DIR']}`
-      `chown -R rabbitmq:rabbitmq #{ENV['RABBITMQ_LOG_BASE']}`
-      `chmod 777 #{ENV['RABBITMQ_LOG_BASE']}`
+      setup_permissions
     end
 
     def setup_env
+      Warren.logger.info("Applying Warren config: #{Warren.config}")
+
       ENV.tap do |e|
         e['RABBITMQ_USE_LONGNAME'] = 'true'
         e['HOSTNAME'] = hostname
         e['RABBITMQ_NODENAME'] = address
-        e['MNESIA_NODE_BASE_DIR'] = Warren.config.base_mnesia_dir
-        e['RABBITMQ_LOG_BASE'] = Warren.config.log_base
 
-        # TODO: Make configurable?
-        e['RABBITMQ_MNESIA_DIR'] = "#{e['MNESIA_NODE_BASE_DIR']}/#{node_name}"
-        e['RABBITMQ_LOGS'] = "#{e['RABBITMQ_LOG_BASE']}/#{e['RABBITMQ_NODENAME']}.info"
-        e['RABBITMQ_SASL_LOGS'] = "#{e['RABBITMQ_LOG_BASE']}/#{e['RABBITMQ_NODENAME']}-sasl.info"
+        # Persistent data (mnesia) config
+        e['MNESIA_NODE_BASE_DIR'] = Warren.config.base_mnesia_dir
+        e['RABBITMQ_MNESIA_DIR'] = "#{Warren.config.base_mnesia_dir}/#{Warren.config.node_name}"
+
+        # Log config
+        e['RABBITMQ_LOG_BASE'] = Warren.config.log_base
+        e['RABBITMQ_LOGS'] = "#{Warren.config.log_base}/rabbitmq.info"
+        e['RABBITMQ_SASL_LOGS'] = "#{Warren.config.log_base}/rabbitmq-sasl.info"
+
+        # Process config
+        e['RABBITMQ_PID_FILE'] = Warren.config.pid_file
+
+        # e['RABBITMQ_CONFIG_FILE'] = Warren.config.config_file
+
+        # For debugging
+        # ENV RABBITMQ_SERVER_ERL_ARGS="+K true +A128 +P 1048576 -kernel inet_default_connect_options [{nodelay,true}]"
       end
     end
 
-    def pid_file
-      "#{ENV['MNESIA_NODE_BASE_DIR']}/#{ENV['node_name']}.pid"
+    def setup_permissions
+      # `echo "127.0.0.1 #{ENV['HOSTNAME']}" >> /etc/hosts`
+
+      `mkdir -p #{Warren.config.base_mnesia_dir}`
+      `mkdir -p #{Warren.config.log_base}`
+
+      `chown -R rabbitmq:rabbitmq #{Warren.config.base_mnesia_dir}`
+      `chmod 777 #{Warren.config.base_mnesia_dir}`
+      `chown -R rabbitmq:rabbitmq #{Warren.config.log_base}`
+      `chmod 777 #{Warren.config.log_base}`
     end
 
     def apply_policies

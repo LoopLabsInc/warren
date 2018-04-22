@@ -7,11 +7,13 @@ module Warren
   end
 
   DEFAULT_CONFIG = {
+    "config_file": '/not/sure',
     "node_name": "rabbit",
     "policies": {},
     "base_mnesia_dir": '/var/lib/rabbitmq/mnesia',
     "log_base": '/var/lib/rabbitmq/infos',
-    "log_level": Logger::INFO
+    "log_level": Logger::INFO,
+    "pid_file": '/etc/rabbitmq/server.pid'
   }
 
   def self.reset_config(configuration = OpenStruct.new(DEFAULT_CONFIG))
