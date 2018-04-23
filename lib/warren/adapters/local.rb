@@ -7,7 +7,7 @@ module Warren
       end
 
       def node_name
-        hostname
+        'rabbit'
       end
 
     end

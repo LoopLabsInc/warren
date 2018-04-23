@@ -26,10 +26,6 @@ module Warren
         `hostname`.chomp
       end
 
-      def node_name
-        hostname
-      end
-
     end
   end
 end
